@@ -1,0 +1,289 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title>Vis & Society Assignment 3</title>
+	<link rel="stylesheet" href="https://vis-society.github.io/assignments/report.css" />
+  <style>
+    .viz-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 2rem 0;
+    }
+
+    .viz {
+      position: relative;
+      width: 420px;
+      height: 420px;
+      --apple-size: 260px;
+      --ring-shift: calc(var(--apple-size) * 0.13818565/2);
+    }
+
+    .viz img {
+      position: absolute;
+      transform-origin: 50% 50%;
+    }
+
+    .viz .apple {
+      top: 50%;
+      left: 50%;
+      width: var(--apple-size);
+      height: auto;
+      transform: translate(-50%, -50%);
+    }
+
+    .viz .person {
+      width: 70px;
+      height: 175px;
+      top: calc(50% + var(--ring-shift));
+      left: 50%;
+      transform-origin: 50% 50%;
+    }
+
+    /* Radial placement of 10 people, starting at top and rotating clockwise */
+    .viz .person.p1 {
+      transform: translate(-50%, -50%) rotate(0deg) translate(0, -235px);
+    }
+
+    .viz .person.p2 {
+      transform: translate(-50%, -50%) rotate(36deg) translate(0, -235px);
+    }
+
+    .viz .person.p3 {
+      transform: translate(-50%, -50%) rotate(72deg) translate(0, -235px);
+    }
+
+    .viz .person.p4 {
+      transform: translate(-50%, -50%) rotate(108deg) translate(0, -235px);
+    }
+
+    .viz .person.p5 {
+      transform: translate(-50%, -50%) rotate(144deg) translate(0, -235px);
+    }
+
+    .viz .person.p6 {
+      transform: translate(-50%, -50%) rotate(180deg) translate(0, -235px);
+    }
+
+    .viz .person.p7 {
+      transform: translate(-50%, -50%) rotate(216deg) translate(0, -235px);
+    }
+
+    .viz .person.p8 {
+      transform: translate(-50%, -50%) rotate(252deg) translate(0, -235px);
+    }
+
+    .viz .person.p9 {
+      transform: translate(-50%, -50%) rotate(288deg) translate(0, -235px);
+    }
+
+    .viz .person.p10 {
+      transform: translate(-50%, -50%) rotate(324deg) translate(0, -235px);
+    }
+  </style>
+</head>
+
+<body>
+	<header>
+		<h1>
+			<small>Assignment 4</small>
+			Persuasive or Deceptive Visualization?
+		</h1>
+
+		<p>
+			<strong>Gabrielle Cohn</strong> — <em>gcohn@mit.edu</em>
+		</p>
+	</header>
+
+	<main>
+    <h2>Proposition:</h2>
+    <h3><b>Complaints against the NYPD indicate a widespread and systemic bias in the treatment of Black Americans by law enforcement which cannot be dismissed as the actions of a few "bad apples"</b></h3>
+
+		<!--<section>
+      <h3>FOR the Proposition</h3>
+
+      <figure>
+        <div class="viz-wrapper">
+          <div class="viz">
+            <img class="apple" src="assets/rotten.png" alt="Rotten apple" />
+            <img class="person p1" src="assets/man-red.svg" alt="" />
+            <img class="person p2" src="assets/man.svg" alt="" />
+            <img class="person p3" src="assets/man.svg" alt="" />
+            <img class="person p4" src="assets/man.svg" alt="" />
+            <img class="person p5" src="assets/man.svg" alt="" />
+            <img class="person p6" src="assets/man.svg" alt="" />
+            <img class="person p7" src="assets/man.svg" alt="" />
+            <img class="person p8" src="assets/man.svg" alt="" />
+            <img class="person p9" src="assets/man.svg" alt="" />
+            <img class="person p10" src="assets/man.svg" alt="" />
+          </div>
+        </div>
+				<figcaption>
+					Illustration combining a rotten apple with surrounding people icons.
+				</figcaption>
+			</figure>
+
+			<p>
+				Design Decisions and Rationale:
+			</p>
+
+			<ul>
+				<li>RATIONALE_1</li>
+				<li>RATIONALE_2</li>
+				<li>RATIONALE_3</li>
+			</ul>
+    </section>-->
+  <section>
+		<h3>AGAINST the Proposition</h3>
+  
+		<figure>
+				  <img src="assets/bad_apples.png" alt="" />
+				  <figcaption>
+			The primary visualization is the diagram of the two apples at the bottom, representing number of total complaints from Black complainants (aggregated across all years covered by the data) before <b>[left apple]</b> and after <b>[right apple]</b> removing all complaints from the 10% of officers with the highest number of complaints from Black complainants.
+				  </figcaption>
+			  </figure>
+  
+			  <p>
+				  Design Decisions and Rationale:
+			  </p>
+        <!-- For each visualization, enumerate 3–5 design decisions you think are central to making the visualization persuasive (note, a “design” decision can also refer to decisions you made about data transformation or textual content). For each decision: -->
+			  <!-- Score, on a diverging scale from -2 to 2, how deceptive or earnest your decision is (where -2 is fully deceptive, 0 is neutral, and 2 is fully earnest). Only use a score of 0 if you are really unable to decide one way or another. You may use 0.5 steps as needed.
+
+Write a couple of sentences documenting your decision, with corresponding rationale/justification. How does this decision help make your visualization persuasive? What worked well, and what didn’t? What other alternatives did you consider, and why did you settle on this one? -->
+        <ul>
+				  <li>Used imagery of apples to capture attention, and suggest the conclusion that the viewer should draw. 
+            <ul>
+              <li>As noted in (citation), "Appealing to various senses is ranked as the most
+                applied strategy for affective visualization design. In terms of specific
+                design techniques, the use of realistic/metaphorical imagery such as
+                photographs, figurative data glyphs, and visual metaphors was mentioned
+                extensively by designers." I utilize the metaphorical imagery of the apple to create a narrative: 
+                "Yes, we all agree the current apple is gross and bad, but if we just remove one officer, we can have this shiny, 
+                delicious looking apple." The tasty-looking apple indicates to the viewer that this is an endpoint we could be satisfied with, i.e. that this is a sufficient reduction in complaints.</li> 
+                <li>Score: 1.5 - while this choice does not obfuscate the data, it was designed with emotional manipulation in mind.</li>
+              </ul>
+          </li>
+          <li> Used evocative colors to further drive the narrative.
+            <ul>
+              <li>I used evocative colors - the "bad" police officer is easily identifiable in red, giving the sense that it is simple to find and pluck out the "worst 10%". 
+                The transition from the rotten apple to the good apple is shown with a green arrow, a color often associated with success/task completion (e.g. a green checkmark). The light yellow goes with the apple theme and contributes to an appealing, slightly folksy aesthetic. 
+                The goal is to make the viewer feel both informed and reassured.
+              </li>
+              <li>Score: 1 - like the apple art, the color choice is meant to evoke a specific emotion. However, it is a less overt attempt.</li>
+              </ul>
+          </li>
+				  <li>Experimented with different methods of aggregation to find maximal difference in complaints.  </li>
+          <ul>
+            <li>I experimented with a few methods of reducing complaints (listed below), and then selected the method that resulted in the greatest reduction ratio. I crafted the messaging of the visualization around that method.
+              <ul>
+                <li>For each year, identifying the 10% of officers with the most complaints from Black complainants for that year and removing them, then summing over all the years.</li>
+                <li>For each year, identifying the 10% of officers with the most complaints from Black complainants for that year and removing them, then comparing the reduction ratio for each year.</li>
+                <li>Aggregating across all years, identifying the 90th percentile number of complaints from Black complainants, and removing all officers whose number of complaints exceeded that, even if it was more than 10% of officers.</li>
+                <li>Aggregating across all years, identifying the top 10% of officers with the most complaints from Black complainants, and removing all their complaints across all years.</li>
+                <li>Aggregating across all years, identifying the 90th percentile number of complaints from Black complainants, and removing all officers whose number of complaints exceeded that, even if it was more than 10% of officers.</li>
+              </ul>
+            </li>
+            <li>Score: 1 - These are all potentially interesting questions, but I did go out of my way to pick the equation which gave me the "best" result. This approach can't really be put into practice, because it requires knowledge of who was the "worst" officer over multiple years, at which point the officer may have already caused a lot of harm. </li>
+          </ul>
+          <li>Used proportion of Black complainants as a radius ratio, rather than an area ratio.
+            <ul>
+              <li>When I was creating the relative size of the apples, I could have made number of complainants proportional to area (as I did in A3 for COVID variants), but I instead chose to make number of complainants proportional to the radius of the apple, so that the visual impact on the area of the smaller apple would be squared. 
+                The goal is to 1. make the size difference as dramatic as possible, and 2. utilize the viewer's perception of size ("oh, the problem is much smaller now"), rather than focusing on specific numbers ("There are still thousands of complaints"). 
+              </li>
+              <li>Score: 0.5 - I think this is a potentially valid design choice. If I had made the figures proportional by area instead of radius, there would have been bias in the opposite direction, since people are not accurate at estimating area.</li>
+            </ul>
+          </li>
+				  <li>Avoiding comparisons to other complainant groups.
+            <ul>
+              <li>When compared to complainants of other ethnicities, we see that Black Americans are disproportionately impacted by police misconduct. For this reason, I only show numbers of Black complainants, to avoid creating a point of reference. 
+                If I were to list number of White complainants, for example, the viewer would see that there are still multiple times more Black complainants than White complainants, even after the reduction. </li>
+              <li>Score: 2 - I think this is the most obvious misdirection, since users have no basis for comparison without data from other ethnicities. </li>
+            </ul>
+          </li>
+          <li>Language and visuals that focus on the officers and the complaints, rather than the people being impacted.</li>
+          <ul>
+            <li>In both the text and visuals, I focus on officers and number of complaints. The only people shown are police officers - the complaints are abstracted away to apples, separating the viewer from the people who are impacted by policing.
+              The language refers to the people being impacted only as "complainants", and the focus is on eliminating the most number of complaints with the minimum reduction in police officers. This creates an overall message of "here is a simple fix we can do to solve the issue of complaints,"
+              rather than "why are there so many complaints", or "what is the experience for the 'complainant'", or "what are the factors that underpin this number?"
+            </li>
+            <li>Score: 0.5 - I think this is a valid framing although not the most humanitarian.</li>
+          </ul>
+			  </ul>
+	</section>
+  <section>
+    <h3>FOR the Proposition</h3>
+
+    <figure>
+      <img src="assets/bias.png" alt="" />
+      <figcaption>
+        BRIEF CAPTION HERE.
+      </figcaption>
+    </figure>
+
+    <p>
+      Design Decisions and Rationale:
+    </p>
+
+    <ul>
+      <li> Utilizing a New York Times-esque style to create a sense of authority and professionalism. 
+        <ul>
+          <li>As we discussed in our reading on data feminism, "four conventions of data visualization reinforce people's perceptions of its factual basis: (1) two dimensional viewpoints, (2) clean layouts, (3) geometric shapes and lines, and (4) the inclusion of data sources at the bottom." 
+            I think the NYT has mastered these conventions, producing visualizations that feel trustworthy because they're so minimalist and data-focused. The sense I get from their charts is "I don't need to make an emotional appeal, because I am reporting the true facts."
+            I did my best recreation of this style to capture the no-nonsense sense of authority that top news sources often convey. I use text blocks to highlight important comparisons in the graphs, but also because if a viewer is skimming, they will see a lot of words, and might just assume the information is legitimate on that basis. 
+            Similarly, I have three charts rather than one both because I think they provide interesting information, and also because it sends the message "look how many graphs there are, clearly this is a major, nuanced issue." In my second visualization, I use just one graph for the opposite reason, to make the problem seem simpler and less entrenched. 
+            I also found it easier to create visualizations for this narrative because it seemed more supported by the data.
+          </li>
+          <li>Score: 0.5 - This feels like a much less direct emotional appeal than my apple design. It's more about cultivating a general air of professionalism, as is common journalistic practice.</li>
+        </ul>
+      </li>
+      <li> Comparing relative numbers of complainants between different ethnicities
+        <ul>
+          <li>Unlike in my second diagram, I made sure to focus on comparisons between complainants of different ethnicities. Otherwise, the viewer has no reference point for what is a good or bad number. I used red and orange to represent complaints from Black and Hispanic Americans, both so that the eye is drawn to those numbers and to highlight that the high number of complaints is an issue. When people see a large red or orange bar,
+            there is an automatic sense from past graph-reading experience, that this is the percentage we want to reduce - red, orange, and yellow are often colors of warning. I also call out ratios in the text blocks because it's harder for someone to visually judge the exact ratios between bar heights/lengths. I put these ratios in bold so that they jump out to the viewer, guiding their sense of what is important. 
+            Throughout this visualization, my goal is to emphasize the magnitude of the discrepancy in complaint counts between Black, Hispanic, and White Americans. The larger the discrepancy, the less plausible it seems that the differences are due to a few "bad apple" officers, strengthening the idea of a broad, systemic issue.</li>
+            <li>Score: 1 - This is a valid design choice, and one that is supported by the data. </li>
+          </ul>
+      </li>
+      <li> Highlighting complainant experience, rather than just focusing on pure complaint count.
+        <ul>
+          <li>Although the NYT style is sometimes detached/abstracted, I do try to humanize the issue by breaking down the specific types of complaints. 
+            Not only does this make the viewer think about what is actually behind each complaint (violence, insults, and harassment), but it also shows that police bias is multifaceted. 
+            It's not just a question of numbers but also of severity. The goal is to reveal the complexity of the issue, rather than allowing it to be simplified and dismissed. </li>
+        </ul>
+      </li>
+      <li>Maximizing impact of ratios
+        <ul>
+          <li>For the statistic about 6 times more complaints from Black Americans than White Americans per year, I reached this number by first getting average ratio per year, and then averaging across years. I could also have aggregated across all years and then taken the ratio (in which case I would have dropped the "per year"), but this yielded a slightly smaller number due to a number of high-ratio years in the beginning when there were very few White complainants (therefore a smaller denominator and a higher ratio).
+            The purpose of this decision was to highlight the magnitude of the difference to the greatest degree possible, emphasizing the severity of the issue. 
+            Additionally, there were some complaints where the ethnicity of the complainant was empty. I could have left these in the dataset under "Other", or created a new "Unknown" category - I think either could have been a legitimate way of handling these values - but I chose to just exclude them from the visualizations because it made the bottom chart pop more (larger difference in percentages of Black complainants for officers who were or were not promoted). 
+          </li>
+        </ul>
+      </li>
+      <li> Addressing officer outcome
+        <ul>
+          <li> I think the third chart is the most compelling for the proposition. While the data concerns the actions of individuals, this chart shows the system of rewards and punishments (or lack thereof) behind those individuals' actions.
+          </li>
+        </ul>
+      </li>
+
+    </ul>
+  </section>
+
+	
+
+    
+ <!-- After documenting these decisions, write a 1–2 paragraph final reflection on your overall design process across both visualizations. What was straightforward or difficult? What surprised you? How do you now define “ethical analysis and visualization”? What bounds (if any) can you draw to distinguish “acceptable” persuasive choices vs. “misleading” ones (and if none, why not)? -->
+    <section>
+      <h2>Final Reflection</h2>
+
+      <p>Overall, I enjoyed the challenge of finding different ways of looking at the data, as well as the element of creativity involved in how to best present my findings. I started by plotting out various fields against each other in both Tableau and Python (which I am more familiar with).
+        I played around a lot with ratios vs absolute values, and the way switching from one to another can greatly change the impact of the data. Once I found one or more statistics I was happy with, I built my visualization around it. In some ways I think it was more "fun" to work on the narrative that was less supported by the data, because it required more "trickery"
+      and strategies to push the viewer towards the desired conclusion. For the other visualization (pro proposition), I let the data speak more for itself. I actually found the second visualization a bit trickier <i>because</i> it aligned more with my personal beliefs. My pre-existing assumptions about what the data would show initially made it harder to come up with new/interesting directions, because I got stuck on the idea of proving what I already thought. 
+      Although I took more artistic liberties with the second visualization, in both cases I made decisions about framing and aesthetics. The NYT style is not just a neutral default, it was also very much a design decision. Having completed this assignment, I don't think that a clear line can be drawn between "acceptable" vs "misleading" choices.
+      While at times I did make decisions that were more deceptive than earnest, there were various cases when I think other choices could have been justified but I chose the one that furthered my narrative. Is this misleading, or is it just part of crafting a coherent message? When a viewer sees the final product, they are rarely privy to all the decisions that went into it, or the alternatives and drafts that preceded it.
+      For a complex dataset like this, there will always be ways of looking at the data (aggregating, focusing on a specific subset, etc.) that lend more to one conclusion than another, but might both be "true". 
+    </p>
+    </section>
+	</main>
+</body>
+</html>
