@@ -160,7 +160,7 @@ Write a couple of sentences documenting your decision, with corresponding ration
                 extensively by designers." I utilize the metaphorical imagery of the apple to create a narrative: 
                 "Yes, we all agree the current apple is gross and bad, but if we just remove one officer, we can have this shiny, 
                 delicious looking apple." The tasty-looking apple indicates to the viewer that this is an endpoint we could be satisfied with, i.e. that this is a sufficient reduction in complaints.</li> 
-                <li>Score: 1.5 - while this choice does not obfuscate the data, it was designed with emotional manipulation in mind.</li>
+                <li>Score: -1.5 - while this choice does not obfuscate the data, it was designed with emotional manipulation in mind.</li>
               </ul>
           </li>
           <li> Used evocative colors to further drive the narrative.
@@ -169,7 +169,7 @@ Write a couple of sentences documenting your decision, with corresponding ration
                 The transition from the rotten apple to the good apple is shown with a green arrow, a color often associated with success/task completion (e.g. a green checkmark). The light yellow goes with the apple theme and contributes to an appealing, slightly folksy aesthetic. 
                 The goal is to make the viewer feel both informed and reassured.
               </li>
-              <li>Score: 1 - like the apple art, the color choice is meant to evoke a specific emotion. However, it is a less overt attempt.</li>
+              <li>Score: -1 - like the apple art, the color choice is meant to evoke a specific emotion. However, it is a less overt attempt.</li>
               </ul>
           </li>
 				  <li>Experimented with different methods of aggregation to find maximal difference in complaints.  </li>
@@ -183,7 +183,7 @@ Write a couple of sentences documenting your decision, with corresponding ration
                 <li>Aggregating across all years, identifying the 90th percentile number of complaints from Black complainants, and removing all officers whose number of complaints exceeded that, even if it was more than 10% of officers.</li>
               </ul>
             </li>
-            <li>Score: 1 - These are all potentially interesting questions, but I did go out of my way to pick the equation which gave me the "best" result. This approach can't really be put into practice, because it requires knowledge of who was the "worst" officer over multiple years, at which point the officer may have already caused a lot of harm. </li>
+            <li>Score: -1 - These are all potentially interesting questions, but I did go out of my way to pick the equation which gave me the "best" result. This approach can't really be put into practice, because it requires knowledge of who was the "worst" officer over multiple years, at which point the officer may have already caused a lot of harm. </li>
           </ul>
           <li>Used proportion of Black complainants as a radius ratio, rather than an area ratio.
             <ul>
@@ -197,7 +197,7 @@ Write a couple of sentences documenting your decision, with corresponding ration
             <ul>
               <li>When compared to complainants of other ethnicities, we see that Black Americans are disproportionately impacted by police misconduct. For this reason, I only show numbers of Black complainants, to avoid creating a point of reference. 
                 If I were to list number of White complainants, for example, the viewer would see that there are still multiple times more Black complainants than White complainants, even after the reduction. </li>
-              <li>Score: 2 - I think this is the most obvious misdirection, since users have no basis for comparison without data from other ethnicities. </li>
+              <li>Score: -2 - I think this is the most obvious misdirection, since users have no basis for comparison without data from other ethnicities. </li>
             </ul>
           </li>
           <li>Language and visuals that focus on the officers and the complaints, rather than the people being impacted.</li>
@@ -206,7 +206,7 @@ Write a couple of sentences documenting your decision, with corresponding ration
               The language refers to the people being impacted only as "complainants", and the focus is on eliminating the most number of complaints with the minimum reduction in police officers. This creates an overall message of "here is a simple fix we can do to solve the issue of complaints,"
               rather than "why are there so many complaints", or "what is the experience for the 'complainant'", or "what are the factors that underpin this number?"
             </li>
-            <li>Score: 0.5 - I think this is a valid framing although not the most humanitarian.</li>
+            <li>Score: -0.5 - I think this is a valid framing although not the most humanitarian.</li>
           </ul>
 			  </ul>
 	</section>
@@ -233,7 +233,7 @@ Write a couple of sentences documenting your decision, with corresponding ration
             Similarly, I have three charts rather than one both because I think they provide interesting information, and also because it sends the message "look how many graphs there are, clearly this is a major, nuanced issue." In my second visualization, I use just one graph for the opposite reason, to make the problem seem simpler and less entrenched. 
             I also found it easier to create visualizations for this narrative because it seemed more supported by the data.
           </li>
-          <li>Score: 0.5 - This feels like a much less direct emotional appeal than my apple design. It's more about cultivating a general air of professionalism, as is common journalistic practice.</li>
+          <li>Score: -0.5 - This feels like a much less direct emotional appeal than my apple design. It's more about cultivating a general air of professionalism, as is common journalistic practice.</li>
         </ul>
       </li>
       <li> Comparing relative numbers of complainants between different ethnicities
@@ -241,7 +241,7 @@ Write a couple of sentences documenting your decision, with corresponding ration
           <li>Unlike in my second diagram, I made sure to focus on comparisons between complainants of different ethnicities. Otherwise, the viewer has no reference point for what is a good or bad number. I used red and orange to represent complaints from Black and Hispanic Americans, both so that the eye is drawn to those numbers and to highlight that the high number of complaints is an issue. When people see a large red or orange bar,
             there is an automatic sense from past graph-reading experience, that this is the percentage we want to reduce - red, orange, and yellow are often colors of warning. I also call out ratios in the text blocks because it's harder for someone to visually judge the exact ratios between bar heights/lengths. I put these ratios in bold so that they jump out to the viewer, guiding their sense of what is important. 
             Throughout this visualization, my goal is to emphasize the magnitude of the discrepancy in complaint counts between Black, Hispanic, and White Americans. The larger the discrepancy, the less plausible it seems that the differences are due to a few "bad apple" officers, strengthening the idea of a broad, systemic issue.</li>
-            <li>Score: 1 - This is a valid design choice, and one that is supported by the data. </li>
+            <li>Score: 2 - I think this is a baseline requirement for the user to be able to reasonable interpret the data. </li>
           </ul>
       </li>
       <li> Highlighting complainant experience, rather than just focusing on pure complaint count.
@@ -257,12 +257,14 @@ Write a couple of sentences documenting your decision, with corresponding ration
             The purpose of this decision was to highlight the magnitude of the difference to the greatest degree possible, emphasizing the severity of the issue. 
             Additionally, there were some complaints where the ethnicity of the complainant was empty. I could have left these in the dataset under "Other", or created a new "Unknown" category - I think either could have been a legitimate way of handling these values - but I chose to just exclude them from the visualizations because it made the bottom chart pop more (larger difference in percentages of Black complainants for officers who were or were not promoted). 
           </li>
+          <li>Score: 1 - as noted above, I think my method was legitimate, but I did choose the method which advanced my narrative. </li>
         </ul>
       </li>
       <li> Addressing officer outcome
         <ul>
           <li> I think the third chart is the most compelling for the proposition. While the data concerns the actions of individuals, this chart shows the system of rewards and punishments (or lack thereof) behind those individuals' actions.
           </li>
+          <li>Score: 1.0 - I think this actually shows something interesting, although it demands more analysis. A viewer might jump to a "correlation = causation" conclusion.  </li>
         </ul>
       </li>
 
