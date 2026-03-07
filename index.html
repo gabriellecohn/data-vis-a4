@@ -171,7 +171,7 @@ Write a couple of sentences documenting your decision, with corresponding ration
                 The transition from the rotten apple to the good apple is shown with a green arrow, a color often associated with success/task completion (e.g. a green checkmark). The light yellow goes with the apple theme and contributes to an appealing, slightly folksy aesthetic. 
                 The goal is to make the viewer feel both informed and reassured.
               </li>
-              <li>Score: -0.5 - like the apple art, the color choice is meant to evoke a specific emotion. However, it is a less overt attempt.</li>
+              <li>Score: -0.5 - like the apple art, the color choice is meant to evoke a specific emotion. However, it is a less overt attempt. Nonetheless, I use colors to try to suggest the "correct" conclusion.</li>
               </ul>
           </li>
 				  <li>Experimented with different methods of aggregation to find maximal difference in complaints.  </li>
@@ -230,14 +230,14 @@ Write a couple of sentences documenting your decision, with corresponding ration
     <ul>
       <li> Utilizing a New York Times-esque style to create a sense of authority and professionalism. 
         <ul>
-          <li>As we discussed in our reading on data feminism, "four conventions of data visualization reinforce people's perceptions of its factual basis: (1) two dimensional viewpoints, (2) clean layouts, (3) geometric shapes and lines, and (4) the inclusion of data sources at the bottom." 
+          <li>As we discussed in our reading on  <a href="https://data-feminism.mitpress.mit.edu">data feminism</a>, "four conventions of data visualization reinforce people's perceptions of its factual basis: (1) two dimensional viewpoints, (2) clean layouts, (3) geometric shapes and lines, and (4) the inclusion of data sources at the bottom." 
             I think the NYT has mastered these conventions, producing visualizations that feel trustworthy because they're so minimalist and data-focused. The sense I get from their charts is "I don't need to make an emotional appeal, because I am reporting the true facts."
             I did my best recreation of this style to capture the no-nonsense sense of authority that top news sources often convey. I use text blocks to highlight important comparisons in the graphs, but also because if a viewer is skimming, they will see a lot of words, and might just assume the information is legitimate on that basis. 
             Similarly, I have four charts rather than one both because I think they provide interesting information, and also because it sends the message "look how many graphs there are, clearly this is a major, nuanced issue." In my apples visualization, I use just one graph for the opposite reason, to make the problem seem simpler and less entrenched. 
             While I try to keep a more "objective" and detached tone in the writing as well, I make a few language changes from the apples visualization. 
             For example, I refer to complainants as "Americans," rather than "complainants", to remind the viewer that these are real people and fellow citizens.
           </li>
-          <li>Score: -0.5 - This feels like a less direct emotional appeal than my apple design. Using design to cultivate a sense of authority and trustworhiness is a more abstract manipulation than using evocative imagery to directly push a viewer towards a particular conclusion.</li>
+          <li>Score: 0.5 - This feels like a less direct emotional appeal than my apple design. Using design to cultivate a sense of authority and trustworhiness is a more abstract manipulation than using evocative imagery to directly push a viewer towards a particular conclusion.</li>
         </ul>
       </li>
       <li> Comparing relative numbers of complainants between different ethnicities
@@ -266,7 +266,7 @@ Write a couple of sentences documenting your decision, with corresponding ration
       </li>
       <li>Maximizing impact of ratios
         <ul>
-          <li>For the statistic about 6 times more complaints from Black Americans than White Americans per year, I reached this number by first getting average ratio per year, and then averaging across years. I could also have aggregated across all years and then taken the ratio (in which case I would have dropped the "per year"), but this yielded a slightly smaller number due to a number of high-ratio years in the beginning when there were very few White complainants (therefore a smaller denominator and a higher ratio).
+          <li>For the statistic about "6 times more complaints from Black Americans than White Americans per year", I reached this number by first getting average ratio per year, and then averaging across years. I could also have aggregated across all years and then taken the ratio (in which case I would have dropped the "per year"), but this yielded a slightly smaller number due to a number of high-ratio years in the beginning when there were very few White complainants (therefore a smaller denominator and a higher ratio).
             My goal with this decision was to highlight the magnitude of the difference to the greatest degree possible, emphasizing the severity of the issue. 
             Additionally, there were some complaints where the ethnicity of the complainant was empty, "Unknown", or "Refused" (refused to provide). I could have left these in the dataset under "Other", or created a new "Unknown" category - I think either could have been a legitimate way of handling these values - but I chose to just exclude them from the visualizations because it made the percentage differences pop more (e.g. larger difference in percentages of Black complainants for officers who were or were not promoted). 
             Lastly, for my fourth graph (the pie chart), I wanted to compare complaints by officer outcome. I chose to first split complaints into two categories. The first was complaints where the officer's rank was "Police Officer" at the time of the complaint, and was still "Police Officer" as of 2020. The second was complaints where the officer's rank was "Police Officer" at the time of the complaint, and was a higher rank as of 2020. I then looked at the ratios of complainant ethnicity for each of these two groups (aggregated across all officers in each group). However, if I had instead 
@@ -290,8 +290,9 @@ Write a couple of sentences documenting your decision, with corresponding ration
         I played around a lot with ratios vs absolute values, and the way switching from one to another can greatly change the impact of the data. Once I found one or more statistics I was happy with, I built my visualization around it. In some ways I think it was more "fun" to work on the narrative that was less supported by the data, because it required more "trickery"
       and strategies to push the viewer towards the desired conclusion. For the other visualization (pro proposition), I let the data speak more for itself. I actually found the second visualization a bit trickier <i>because</i> it aligned more with my personal beliefs. My pre-existing assumptions about what the data would show initially made it harder to come up with new/interesting directions, because I got stuck on the idea of proving what I already thought. 
       Although I took more artistic liberties with the second visualization, in both cases I made decisions about framing and aesthetics. The NYT style is not just a neutral default, it was also very much a design decision. Having completed this assignment, I don't think that a clear line can be drawn between "acceptable" vs "misleading" choices.
-      While at times I did make decisions that were more deceptive than earnest, there were various cases when I think other choices could have been justified but I chose the one that furthered my narrative. Is this misleading, or is it just part of crafting a coherent message? When a viewer sees the final product, they are rarely privy to all the decisions that went into it, or the alternatives and drafts that preceded it.
-      For a complex dataset like this, there will always be ways of looking at the data (aggregating, focusing on a specific subset, etc.) that lend more to one conclusion than another, but might both be "true". 
+      While at times I did make decisions that were more deceptive than earnest, there were various cases when I think other choices could have been justified but I chose the one that furthered my narrative. Is this misleading, or is it just part of crafting a coherent message? If I illustrate my message through art, is this necessarily a manipulation? Is the the minimalist barchart not? 
+      And these questions only concern the graphs that are <i>present</i>. When a viewer sees the final product, they are rarely privy to all the decisions that went into it, or the alternatives and drafts that preceded it.
+      For a complex dataset like this, there will always be ways of looking at the data (aggregating, focusing on a specific subset, etc.) that lend more to one conclusion than another, but might both be "true".  
     </p>
     </section>
     <h3>Use of generative AI</h3>
