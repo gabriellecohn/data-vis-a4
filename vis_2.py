@@ -18,6 +18,16 @@ COLORS = {
 }
 RACES = ["Black", "White", "Hispanic", "Other"]
 
+# Reference figure width (inches). Font sizes scale with fig width so all plots
+# look consistent when displayed at the same width.
+REF_FIG_WIDTH = 10.0
+
+
+def _font_scale(fig_width: float, size: float) -> int:
+    """Scale a base font size (for REF_FIG_WIDTH) by actual figure width."""
+    return max(6, round(size * fig_width / REF_FIG_WIDTH))
+
+
 def classify(ethnicity: str) -> str:
     e = ethnicity.strip()
     if e in {"Black", "Hispanic", "White"}:
@@ -83,6 +93,10 @@ year_officer_race: dict[str, dict[str, dict[str, set]]] = defaultdict(
     lambda: defaultdict(lambda: defaultdict(set))
 )
 
+# Plot 9: among Exonerated+Substantiated only, per-year counts by complainant race
+year_exonerated_by_race: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+year_substantiated_by_race: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+
 with data_path.open(newline="", encoding="utf-8") as f:
     reader = csv.DictReader(f)
     for row in reader:
@@ -90,7 +104,7 @@ with data_path.open(newline="", encoding="utf-8") as f:
         year          = (row.get("year_received") or "").strip()
         complaint_id  = (row.get("complaint_id") or "").strip()
         raw_eth       = (row.get("complainant_ethnicity") or "").strip()
-        if raw_eth.lower() == "null" or not raw_eth:
+        if raw_eth.lower() == "null" or not raw_eth or raw_eth == "Unknown" or raw_eth == "Refused":
             continue
         fado_type     = (row.get("fado_type") or "").strip()
         rank_inc      = (row.get("rank_incident") or "").strip()
@@ -119,6 +133,12 @@ with data_path.open(newline="", encoding="utf-8") as f:
             # Plot 4
             if fado_type:
                 fado_race_counts[fado_type][race] += 1
+
+            # Plot 9
+            if board_disp.startswith("Exonerated"):
+                year_exonerated_by_race[year][race] += 1
+            elif board_disp.startswith("Substantiated"):
+                year_substantiated_by_race[year][race] += 1
 
             # Report
             year_officers[year].add(mos_id)
@@ -174,9 +194,11 @@ def make_plot1() -> None:
     years_sorted = sorted(y for y in year_race_counts if y.isdigit())
     xs = [int(y) for y in years_sorted]
 
-    fig, ax = plt.subplots(figsize=(10, 5.5))
+    fig, ax = plt.subplots(figsize=(10, 4.5))
+    fw = fig.get_size_inches()[0]
+    fs = lambda x: _font_scale(fw, x)
     apply_nyt_style(ax)
-    ax.tick_params(labelsize=12)
+    ax.tick_params(labelsize=fs(12))
 
     for race in RACES:
         ys = [year_race_counts[y].get(race, 0) for y in years_sorted]
@@ -190,7 +212,7 @@ def make_plot1() -> None:
             xytext=(8, 0),
             textcoords="offset points",
             va="center",
-            fontsize=11,
+            fontsize=fs(11),
             color=STACK_COLORS[race],
             fontfamily="DejaVu Sans",
         )
@@ -200,17 +222,17 @@ def make_plot1() -> None:
     ax.xaxis.set_major_locator(mticker.MultipleLocator(5))
     ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: str(int(x))))
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
-    ax.set_xlabel("Year", fontsize=13, color="#444444")
-    ax.set_ylabel("Number of complaints", fontsize=13, color="#444444")
+    ax.set_xlabel("Year", fontsize=fs(13), color="#444444")
+    ax.set_ylabel("Number of complaints", fontsize=fs(13), color="#444444")
 
     ax.set_title(
         "Complaints by complainant ethnicity over time",
-        fontsize=20, fontweight="bold", color="#111111", loc="left", pad=14,
+        fontsize=fs(20), fontweight="bold", color="#111111", loc="left", pad=fs(14),
         fontfamily="Georgia",
     )
     ax.text(
         0, 0.99, "NYPD civilian complaint data, 1999–2019",
-        transform=ax.transAxes, fontsize=13, color="#777777",
+        transform=ax.transAxes, fontsize=fs(13), color="#777777",
     )
 
     fig.tight_layout()
@@ -259,6 +281,8 @@ def make_plot2() -> None:
     positions = list(range(n_bins)) + [n_bins + 1]
 
     fig, ax = plt.subplots(figsize=(12, 5.5))
+    fw = fig.get_size_inches()[0]
+    fs = lambda x: _font_scale(fw, x)
     apply_nyt_style(ax)
 
     bars = ax.bar(positions, all_counts, color=all_colors, width=0.75, zorder=3,
@@ -269,25 +293,25 @@ def make_plot2() -> None:
 
     # Baseline at ratio = 1 (between bin index 1 and 2)
     ax.axvline(x=1.5, color="#444444", linewidth=1.2, linestyle="--", alpha=0.5)
-    ax.text(0.35, ymax * 0.95, "More White", fontsize=8.5,
+    ax.text(0.35, ymax * 0.95, "More White", fontsize=fs(8.5),
             color="#2980B9", ha="center", va="top")
-    ax.text(2.65, ymax * 0.95, "More Black", fontsize=8.5,
+    ax.text(2.65, ymax * 0.95, "More Black", fontsize=fs(8.5),
             color="#C0392B", ha="center", va="top")
 
     ax.set_xticks(positions)
-    ax.set_xticklabels(all_labels, fontsize=8.5)
+    ax.set_xticklabels(all_labels, fontsize=fs(8.5))
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
-    ax.set_xlabel("Black / White complainant ratio (per officer)", fontsize=10, color="#444444")
-    ax.set_ylabel("Number of officers", fontsize=10, color="#444444")
+    ax.set_xlabel("Black / White complainant ratio (per officer)", fontsize=fs(10), color="#444444")
+    ax.set_ylabel("Number of officers", fontsize=fs(10), color="#444444")
 
     ax.set_title(
         "Distribution of Black-to-White complainant ratio per officer",
-        fontsize=22, fontweight="bold", color="#111111", loc="left", pad=12,
+        fontsize=fs(22), fontweight="bold", color="#111111", loc="left", pad=fs(12),
         fontfamily="Georgia",
     )
     ax.text(
         0, 1.01, "NYPD civilian complaint data, 1999–2019",
-        transform=ax.transAxes, fontsize=13, color="#777777",
+        transform=ax.transAxes, fontsize=fs(13), color="#777777",
     )
 
     ymax = max(all_counts) * 1.1
@@ -330,6 +354,8 @@ def make_plot3() -> None:
     xs = np.arange(n)
 
     fig, ax = plt.subplots(figsize=(14, 5.5))
+    fw = fig.get_size_inches()[0]
+    fs = lambda x: _font_scale(fw, x)
     apply_nyt_style(ax, gridlines=True)
 
     # Build stacked data arrays in stack order
@@ -370,18 +396,18 @@ def make_plot3() -> None:
 
     ax.set_xlim(0, n - 1)
     ax.set_xticks([])
-    ax.set_xlabel(f"Officers with complaints in 2019 (n={n})", fontsize=10, color="#444444")
-    ax.set_ylabel("Number of complaints", fontsize=10, color="#444444")
+    ax.set_xlabel(f"Officers with complaints in 2019 (n={n})", fontsize=fs(10), color="#444444")
+    ax.set_ylabel("Number of complaints", fontsize=fs(10), color="#444444")
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
 
     ax.set_title(
         "Complaints per officer in 2019, by complainant ethnicity",
-        fontsize=22, fontweight="bold", color="#111111", loc="left", pad=12,
+        fontsize=fs(22), fontweight="bold", color="#111111", loc="left", pad=fs(12),
         fontfamily="Georgia",
     )
     ax.text(
         0, 1.01, "Sorted by total complaints (least → most); officers with 2019 complaints only",
-        transform=ax.transAxes, fontsize=12, color="#777777",
+        transform=ax.transAxes, fontsize=fs(12), color="#777777",
     )
 
     fig.tight_layout()
@@ -399,6 +425,8 @@ def make_plot1_v2() -> None:
     xs = [int(y) for y in years_sorted]
 
     fig, ax = plt.subplots(figsize=(11, 5.5))
+    fw = fig.get_size_inches()[0]
+    fs = lambda x: _font_scale(fw, x)
     apply_nyt_style(ax, gridlines=True)
 
     data = np.array(
@@ -428,7 +456,7 @@ def make_plot1_v2() -> None:
             textcoords="offset points",
             va="center",
             ha="left",
-            fontsize=9,
+            fontsize=fs(9),
             color=STACK_COLORS[race],
             fontweight="bold",
         )
@@ -437,17 +465,17 @@ def make_plot1_v2() -> None:
     ax.xaxis.set_major_locator(mticker.MultipleLocator(5))
     ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: str(int(x))))
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
-    ax.set_xlabel("Year", fontsize=10, color="#444444")
-    ax.set_ylabel("Number of complaints (stacked)", fontsize=10, color="#444444")
+    ax.set_xlabel("Year", fontsize=fs(10), color="#444444")
+    ax.set_ylabel("Number of complaints (stacked)", fontsize=fs(10), color="#444444")
 
     ax.set_title(
         "Total complaints over time, stacked by complainant ethnicity",
-        fontsize=22, fontweight="bold", color="#111111", loc="left", pad=12,
+        fontsize=fs(22), fontweight="bold", color="#111111", loc="left", pad=fs(12),
         fontfamily="Georgia",
     )
     ax.text(
         0, 1.01, "NYPD civilian complaint data, 1999–2019",
-        transform=ax.transAxes, fontsize=13, color="#777777",
+        transform=ax.transAxes, fontsize=fs(13), color="#777777",
     )
 
     fig.tight_layout()
@@ -474,6 +502,8 @@ def make_plot2_v2() -> None:
     colors = np.where(diffs_arr >= 0, "#C0392B", "#2980B9")
 
     fig, ax = plt.subplots(figsize=(14, 5.5))
+    fw = fig.get_size_inches()[0]
+    fs = lambda x: _font_scale(fw, x)
     apply_nyt_style(ax, gridlines=False)
 
     ax.bar(xs, diffs_arr, color=colors, width=1.0, linewidth=0, zorder=3)
@@ -485,33 +515,33 @@ def make_plot2_v2() -> None:
         if abs(ref) <= ymax * 0.95:
             ax.axhline(ref, color="#E5E5E5", linewidth=0.7, zorder=0)
             ax.text(len(diffs) * 1.002, ref, f"{ref:+d}",
-                    va="center", fontsize=8, color="#999999")
+                    va="center", fontsize=fs(8), color="#999999")
 
     # Annotate regions
     zero_idx = int(np.searchsorted(diffs_arr, 0))
     ax.text(zero_idx * 0.45, ymax * 0.88, "More White complainants",
-            fontsize=9, color="#2980B9", ha="center", fontweight="bold")
+            fontsize=fs(9), color="#2980B9", ha="center", fontweight="bold")
     ax.text(zero_idx + (len(diffs) - zero_idx) * 0.55, ymax * 0.88, "More Black complainants",
-            fontsize=9, color="#C0392B", ha="center", fontweight="bold")
+            fontsize=fs(9), color="#C0392B", ha="center", fontweight="bold")
 
     ax.set_xlim(-1, len(diffs))
     ax.set_xticks([])
     ax.set_xlabel(
         f"Each bar = one officer (n={len(diffs):,}), sorted by difference",
-        fontsize=10, color="#444444",
+        fontsize=fs(10), color="#444444",
     )
-    ax.set_ylabel("Black − White complaints", fontsize=10, color="#444444")
+    ax.set_ylabel("Black − White complaints", fontsize=fs(10), color="#444444")
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):+,}"))
     ax.spines["bottom"].set_visible(False)
 
     ax.set_title(
         "Black minus White complainants per officer",
-        fontsize=22, fontweight="bold", color="#111111", loc="left", pad=12,
+        fontsize=fs(22), fontweight="bold", color="#111111", loc="left", pad=fs(12),
         fontfamily="Georgia",
     )
     ax.text(
         0, 1.01, "NYPD civilian complaint data, 1999–2019",
-        transform=ax.transAxes, fontsize=13, color="#777777",
+        transform=ax.transAxes, fontsize=fs(13), color="#777777",
     )
 
     fig.tight_layout()
@@ -544,9 +574,11 @@ def make_plot4() -> None:
     row_gap = 0.10
     ys = np.arange(n_rows) * (bar_height + row_gap)
 
-    fig, ax = plt.subplots(figsize=(10, 4.5))
+    fig, ax = plt.subplots(figsize=(12, 4.5))
+    fw = fig.get_size_inches()[0]
+    fs = lambda x: _font_scale(fw, x)
     apply_nyt_style(ax, gridlines=False)
-    ax.tick_params(labelsize=12)
+    ax.tick_params(labelsize=fs(12))
 
     lefts = np.zeros(n_rows)
 
@@ -556,18 +588,18 @@ def make_plot4() -> None:
                        color=STACK_COLORS[race], linewidth=0)
         # Label inside each segment if wide enough
         for j, (w, l) in enumerate(zip(widths, lefts)):
-            if w >= 4:
+            if w >= 2.5:
                 ax.text(
                     l + w / 2, ys[j], f"{w:.0f}%",
-                    ha="center", va="center", fontsize=8.5,
+                    ha="center", va="center", fontsize=fs(8.5),
                     color="white", fontweight="bold",
                 )
         lefts += widths
 
     ax.set_yticks(ys)
-    ax.set_yticklabels(fado_types, fontsize=13, color="#333333")
+    ax.set_yticklabels(fado_types, fontsize=fs(13), color="#333333")
     ax.set_xlim(0, 100)
-    ax.set_xlabel("Share of complaints (%)", fontsize=13, color="#444444")
+    ax.set_xlabel("Share of complaints (%)", fontsize=fs(13), color="#444444")
     ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x)}%"))
     ax.spines["left"].set_visible(False)
     ax.tick_params(left=False)
@@ -579,11 +611,11 @@ def make_plot4() -> None:
         mid = cumulative_x + np.mean([pcts[fado_types[0]][race]]) / 2
         ax.text(
             mid,
-            -(bar_height + row_gap-0.3),
+            -(bar_height + row_gap-0.22),
             race,
             ha="center",
             va="bottom",
-            fontsize=9,
+            fontsize=fs(9),
             color=STACK_COLORS[race],
             fontweight="bold",
             transform=ax.get_xaxis_transform(),
@@ -592,12 +624,12 @@ def make_plot4() -> None:
 
     ax.set_title(
         "Complainant ethnicity breakdown by allegation type",
-        fontsize=20, fontweight="bold", color="#111111", loc="left", pad=25,
+        fontsize=fs(20), fontweight="bold", color="#111111", loc="left", pad=fs(25),
         fontfamily="Georgia",
     )
     ax.text(
         0, 1.02, "NYPD civilian complaint data, 1999–2019",
-        transform=ax.transAxes, fontsize=13, color="#777777",
+        transform=ax.transAxes, fontsize=fs(13), color="#777777",
     )
 
     # Manual layout so ethnicity labels can sit close to the bottom
@@ -633,8 +665,10 @@ def make_plot5() -> None:
         group_pcts[label] = {r: counts[r] / grand * 100 for r in STACK_ORDER}
 
     fig, ax = plt.subplots(figsize=(10, 6.0))
+    fw = fig.get_size_inches()[0]
+    fs = lambda x: _font_scale(fw, x)
     apply_nyt_style(ax, gridlines=True)
-    ax.tick_params(labelsize=12)
+    ax.tick_params(labelsize=fs(12))
 
     xs = np.arange(len(groups))
     bar_w = 0.5
@@ -657,7 +691,7 @@ def make_plot5() -> None:
             if h >= 0.04 * bar_totals[j]:  # show % if segment is at least 4% of bar
                 pct = group_pcts[groups[j][0]][race]
                 ax.text(xs[j], b + h / 2, f"{pct:.1f}%",
-                        ha="center", va="center", fontsize=9,
+                        ha="center", va="center", fontsize=fs(9),
                         color="white", fontweight="bold")
         bottoms += heights
     ax.set_xlim(-0.5, len(groups) - 0.5)
@@ -665,9 +699,9 @@ def make_plot5() -> None:
     ax.set_xticks(xs)
     ax.set_xticklabels(
         [f"{lbl}\n(n={len(officers):,})" for lbl, officers in groups],
-        fontsize=13, color="#333333",
+        fontsize=fs(13), color="#333333",
     )
-    ax.set_ylabel("Number of complaints", fontsize=13, color="#444444")
+    ax.set_ylabel("Number of complaints", fontsize=fs(13), color="#444444")
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
 
     # Legend: STACK_ORDER / STACK_COLORS (aligned with other plots)
@@ -676,19 +710,19 @@ def make_plot5() -> None:
         handles, STACK_ORDER,
         loc="upper right",
         frameon=False,
-        fontsize=11,
+        fontsize=fs(11),
         title="Complainant ethnicity",
-        title_fontsize=12,
+        title_fontsize=fs(12),
     )
 
     ax.set_title(
         "Complainant ethnicity breakdown:\npromoted vs. not-promoted officers",
-        fontsize=20, fontweight="bold", color="#111111", loc="left", pad=20,
+        fontsize=fs(20), fontweight="bold", color="#111111", loc="left", pad=fs(20),
         fontfamily="Georgia",
     )
     ax.text(
         0, 1.0, "Officers who were Police Officer at incident; 1999–2019",
-        transform=ax.transAxes, fontsize=12, color="#777777",
+        transform=ax.transAxes, fontsize=fs(12), color="#777777",
     )
 
     fig.tight_layout()
@@ -696,6 +730,125 @@ def make_plot5() -> None:
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"Plot 5 saved → {out}")
+
+
+# ---------------------------------------------------------------------------
+# Plot 5 pie — Two pie charts: promoted vs. not-promoted, by complainant ethnicity
+# Slice order: Black, Hispanic, White, Other
+# ---------------------------------------------------------------------------
+def make_plot5_pie() -> None:
+    PIE_ORDER = ["Black", "Hispanic", "White", "Other"]
+
+    groups = [
+        ("Promoted",     promoted_officers),
+        ("Not Promoted", not_promoted_officers),
+    ]
+
+    group_counts: dict[str, dict[str, int]] = {}
+    for label, officers in groups:
+        group_counts[label] = {
+            r: sum(len(officer_race_complaints[o].get(r, set())) for o in officers)
+            for r in PIE_ORDER
+        }
+
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4.5))
+    fw = fig.get_size_inches()[0]
+    fs = lambda x: _font_scale(fw, x)
+    # Narrower total width + overlap so the two pies sit closer; labels + legend below bottom=0.26
+    fig.subplots_adjust(top=0.76, bottom=0.26, left=0.0, right=0.82, wspace=-0.15)
+
+    for ax, (label, officers) in zip(axes, groups):
+        counts = group_counts[label]
+        grand = sum(counts.values()) or 1
+        sizes  = [counts[r] for r in PIE_ORDER]
+        colors = [STACK_COLORS[r] for r in PIE_ORDER]
+        pcts   = [counts[r] / grand * 100 for r in PIE_ORDER]
+
+        wedges, _ = ax.pie(
+            sizes,
+            colors=colors,
+            startangle=90,
+            counterclock=False,
+            wedgeprops={"linewidth": 1.2, "edgecolor": "white"},
+        )
+
+        # Black & Hispanic → white label inside; White & Other → dark label outside
+        INSIDE_RACES = {"Black", "Hispanic"}
+        R_TIP  = 1.05   # leader line starts here (pie edge)
+        R_TEXT = 1.30   # label x is based on this radius
+        MIN_GAP = 0.24  # minimum vertical gap between outside labels
+
+        cumulative = 0.0
+        outside_pending = []  # (cos_a, sin_a, label_str)
+
+        for wedge, race, pct in zip(wedges, PIE_ORDER, pcts):
+            if pct < 1:
+                cumulative += pct
+                continue
+            # Pie uses degrees: 360° = 100%. Center of wedge at 90° - (cumulative + pct/2)% of 360°
+            mid_angle_deg = 90 - (cumulative + pct / 2) / 100.0 * 360
+            rad = math.radians(mid_angle_deg)
+            cos_a, sin_a = math.cos(rad), math.sin(rad)
+
+            if race in INSIDE_RACES:
+                ax.text(0.62 * cos_a, 0.62 * sin_a, f"{pct:.1f}%",
+                        ha="center", va="center",
+                        fontsize=fs(11), color="white", fontweight="bold")
+            else:
+                outside_pending.append((cos_a, sin_a, f"{pct:.1f}%"))
+            cumulative += pct
+
+        # Sort outside labels top → bottom by natural y, then enforce min gap
+        outside_pending.sort(key=lambda t: R_TEXT * t[1], reverse=True)
+        placed_ys: list[float] = []
+        for cos_a, sin_a, text in outside_pending:
+            y = R_TEXT * sin_a
+            for py in placed_ys:
+                if abs(y - py) < MIN_GAP:
+                    y = py - MIN_GAP   # push down
+            placed_ys.append(y)
+            # Leader line from pie edge to label position
+            ax.plot([R_TIP * cos_a, R_TEXT * cos_a],
+                    [R_TIP * sin_a, y],
+                    color="#888888", linewidth=0.9, solid_capstyle="round")
+            ha = "left" if cos_a >= 0 else "right"
+            nudge = 0.05 if cos_a >= 0 else -0.05
+            ax.text(R_TEXT * cos_a + nudge, y, text,
+                    ha=ha, va="center", fontsize=fs(10), color="#333333")
+
+        # Expand axes so outside labels and bottom caption aren't clipped
+        ax.set_xlim(-1.75, 1.75)
+        ax.set_ylim(-1.65, 1.45)
+
+        # Label centered below each pie (axis coords so always centered under this subplot)
+        n_officers = len(officers)
+        ax.text(0.5, 0.02, f"{label}\n(n={n_officers:,} officers)",
+                ha="center", va="bottom", fontsize=fs(13), color="#333333",
+                transform=ax.transAxes)
+
+    # Shared legend — sits in the bottom margin
+    handles = [plt.Rectangle((0, 0), 1, 1, color=STACK_COLORS[r]) for r in PIE_ORDER]
+    fig.legend(
+        handles, PIE_ORDER,
+        loc="lower center", ncol=4,
+        frameon=False, fontsize=fs(11),
+        title="Complainant ethnicity", title_fontsize=fs(12),
+        bbox_to_anchor=(0.5, 0.01),
+    )
+
+    # Overall figure title + subtitle in the top margin (above the pies)
+    fig.text(0.02, 0.98,
+             "Complainant ethnicity breakdown:\npromoted vs. not-promoted officers",
+             fontsize=fs(20), fontweight="bold", color="#111111",
+             va="top", fontfamily="Georgia")
+    fig.text(0.02, 0.84,
+             "Officers who were Police Officer at incident; 1999–2019",
+             fontsize=fs(12), color="#777777", va="top")
+
+    out = Path(__file__).with_name("vis_plot5_promo_pie.png")
+    fig.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Plot 5 pie saved → {out}")
 
 
 # ---------------------------------------------------------------------------
@@ -719,6 +872,8 @@ def make_plot2_v3() -> None:
     bar_colors = ["#C0392B" if c >= 0 else "#2980B9" for c in centers]
 
     fig, ax = plt.subplots(figsize=(13, 5.5))
+    fw = fig.get_size_inches()[0]
+    fs = lambda x: _font_scale(fw, x)
     apply_nyt_style(ax, gridlines=True)
 
     ax.bar(centers, counts, width=0.85, color=bar_colors, linewidth=0, zorder=3)
@@ -729,25 +884,25 @@ def make_plot2_v3() -> None:
     ax.axvspan(lo - 1, 0, alpha=0.04, color="#2980B9", zorder=0)
     ax.axvspan(0, hi + 1, alpha=0.04, color="#C0392B", zorder=0)
     ax.text(-0.5, ymax * 0.96, "More White", ha="right", va="top",
-            fontsize=9, color="#2980B9", fontweight="bold")
+            fontsize=fs(9), color="#2980B9", fontweight="bold")
     ax.text( 0.5, ymax * 0.96, "More Black", ha="left",  va="top",
-            fontsize=9, color="#C0392B", fontweight="bold")
+            fontsize=fs(9), color="#C0392B", fontweight="bold")
 
     ax.set_xlim(lo - 1, hi + 1)
     ax.set_ylim(0, ymax)
     ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
-    ax.set_xlabel("Black − White complainants (per officer)", fontsize=10, color="#444444")
-    ax.set_ylabel("Number of officers", fontsize=10, color="#444444")
+    ax.set_xlabel("Black − White complainants (per officer)", fontsize=fs(10), color="#444444")
+    ax.set_ylabel("Number of officers", fontsize=fs(10), color="#444444")
 
     ax.set_title(
         "Distribution of Black minus White complainants per officer",
-        fontsize=22, fontweight="bold", color="#111111", loc="left", pad=12,
+        fontsize=fs(22), fontweight="bold", color="#111111", loc="left", pad=fs(12),
         fontfamily="Georgia",
     )
     ax.text(
-        0, 1.01, "NYPD civilian complaint data, 1999–2019",
-        transform=ax.transAxes, fontsize=13, color="#777777",
+        0, 0.99, "NYPD civilian complaint data, 1999–2019",
+        transform=ax.transAxes, fontsize=fs(13), color="#777777",
     )
 
     fig.tight_layout()
@@ -888,6 +1043,48 @@ def print_report() -> None:
     for race in RACES:
         print(f"{race:<12}  {promo_pct[race]:>9.1f}%  {npromo_pct[race]:>11.1f}%")
 
+    # --- Still Police Officer vs different rank: averages per officer ---
+    print()
+    print("=== Officers who were 'Police Officer' at incident: still PO vs different rank ===")
+    print("(Same split as promoted vs not-promoted above.)")
+    print()
+
+    for label, officers in [("Different rank (promoted)", promoted_officers),
+                            ("Still Police Officer", not_promoted_officers)]:
+        if not officers:
+            print(f"{label}: no officers.")
+            continue
+        n = len(officers)
+        # 1. Average share (percentage) of complaints from each ethnicity per officer
+        pct_by_officer: list[dict[str, float]] = []
+        for o in officers:
+            by_race = {r: len(officer_race_complaints[o].get(r, set())) for r in RACES}
+            total = sum(by_race.values()) or 1
+            pct_by_officer.append({r: by_race[r] / total * 100 for r in RACES})
+        avg_pct_by_race = {r: sum(p[r] for p in pct_by_officer) / n for r in RACES}
+        # 2. Average years between first and last complaint
+        officer_years: dict[str, set[int]] = defaultdict(set)
+        for year_str, od in year_officer_race.items():
+            if not year_str.isdigit():
+                continue
+            y = int(year_str)
+            for mos_id in od:
+                if mos_id in officers:
+                    officer_years[mos_id].add(y)
+        spans = []
+        for o in officers:
+            ys = officer_years.get(o)
+            if ys and len(ys) >= 1:
+                spans.append(max(ys) - min(ys))
+        avg_span = sum(spans) / len(spans) if spans else float("nan")
+
+        print(f"  {label} (n={n:,} officers)")
+        print(f"    Average share of complaints from each ethnicity per officer (%):")
+        for r in RACES:
+            print(f"      {r}: {avg_pct_by_race[r]:.1f}%")
+        print(f"    Average years between first and last complaint: {avg_span:.2f}")
+        print()
+
 
 # ---------------------------------------------------------------------------
 # Plot 6 — Mean ± SD complaint bars per year, by complainant ethnicity
@@ -923,8 +1120,10 @@ def make_plot6() -> None:
     means_table: dict[str, dict[str, float]] = defaultdict(dict)
 
     fig, ax = plt.subplots(figsize=(10, 5.5))
+    fw = fig.get_size_inches()[0]
+    fs = lambda x: _font_scale(fw, x)
     apply_nyt_style(ax)
-    ax.tick_params(labelsize=12)
+    ax.tick_params(labelsize=fs(12))
 
     for year in years_sorted:
         officers_this_year = year_officers.get(year, set())
@@ -985,10 +1184,10 @@ def make_plot6() -> None:
         year if (int(year) - 1999) % 3 == 0 else ""
         for year in years_sorted
     ]
-    ax.set_xticklabels(tick_labels, fontsize=12, color="#444444")
+    ax.set_xticklabels(tick_labels, fontsize=fs(12), color="#444444")
     ax.set_xlim(-inter_gap / 2, group_centers[-1] + group_w / 2 + inter_gap / 2)
 
-    ax.set_ylabel("Complaints per officer", fontsize=13, color="#444444")
+    ax.set_ylabel("Complaints per officer", fontsize=fs(13), color="#444444")
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
 
     # Legend: one swatch per race (full color)
@@ -1000,21 +1199,21 @@ def make_plot6() -> None:
         handles=handles,
         loc="upper right",
         frameon=False,
-        fontsize=11,
+        fontsize=fs(11),
         title="Complainant ethnicity",
-        title_fontsize=12,
+        title_fontsize=fs(12),
     )
 
     ax.set_title(
         "Complaints per officer per year, by complainant ethnicity",
-        fontsize=20, fontweight="bold", color="#111111", loc="left", pad=14,
+        fontsize=fs(20), fontweight="bold", color="#111111", loc="left", pad=fs(14),
         fontfamily="Georgia",
     )
     ax.text(
         0, 0.99,
         "Bars show mean ± 2 SD (light) and mean ± 1 SD (dark) across officers active each year; "
         "white line = mean",
-        transform=ax.transAxes, fontsize=11, color="#777777",
+        transform=ax.transAxes, fontsize=fs(11), color="#777777",
     )
 
     fig.tight_layout()
@@ -1022,6 +1221,265 @@ def make_plot6() -> None:
     fig.savefig(out, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"Plot 6 saved → {out}")
+
+
+# ---------------------------------------------------------------------------
+# Plot 7 — Mean complaints per officer per year, with ±1 SD band, by ethnicity
+# ---------------------------------------------------------------------------
+def make_plot7() -> None:
+    years_sorted = [str(y) for y in range(1999, 2020)]
+    xs = [int(y) for y in years_sorted]
+
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    fw = fig.get_size_inches()[0]
+    fs = lambda x: _font_scale(fw, x)
+    apply_nyt_style(ax)
+    ax.tick_params(labelsize=fs(12))
+
+    for race in RACES:
+        means = []
+        sds   = []
+        for year in years_sorted:
+            officers_this_year = year_officers.get(year, set())
+            if not officers_this_year:
+                means.append(float("nan"))
+                sds.append(0.0)
+                continue
+            counts = np.array([
+                len(year_officer_race[year][mos_id].get(race, set()))
+                for mos_id in officers_this_year
+            ], dtype=float)
+            means.append(counts.mean())
+            sds.append(counts.std(ddof=1) if len(counts) > 1 else 0.0)
+
+        means = np.array(means)
+        sds   = np.array(sds)
+        color = STACK_COLORS[race]
+
+        # ±1 SD shaded band
+        ax.fill_between(
+            xs,
+            np.maximum(0, means - sds),
+            means + sds,
+            color=color, alpha=0.18, linewidth=0, zorder=2,
+        )
+
+        # Mean line
+        ax.plot(xs, means, color=color, linewidth=2,
+                solid_capstyle="round", zorder=3)
+
+        # Mean dots
+        ax.scatter(xs, means, color=color, s=28, zorder=4,
+                   facecolors="white", edgecolors=color, linewidths=1.5)
+
+        # Race label at right end
+        last_valid = next(
+            (means[i] for i in range(len(means) - 1, -1, -1)
+             if not np.isnan(means[i])), None
+        )
+        if last_valid is not None:
+            ax.annotate(
+                race,
+                xy=(xs[-1], last_valid),
+                xytext=(8, 0),
+                textcoords="offset points",
+                va="center",
+                fontsize=fs(11),
+                color=color,
+                fontfamily="DejaVu Sans",
+            )
+
+    ax.set_xlim(xs[0] - 1, xs[-1] + 3)
+    ax.xaxis.set_major_locator(mticker.MultipleLocator(5))
+    ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: str(int(x))))
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{x:.1f}"))
+    ax.set_xlabel("Year", fontsize=fs(13), color="#444444")
+    ax.set_ylabel("Mean complaints per officer", fontsize=fs(13), color="#444444")
+
+    ax.set_title(
+        "Mean complaints per officer per year, by complainant ethnicity",
+        fontsize=fs(20), fontweight="bold", color="#111111", loc="left", pad=fs(14),
+        fontfamily="Georgia",
+    )
+    ax.text(
+        0, 1.01,
+        "Shaded band = ±1 SD across officers active each year",
+        transform=ax.transAxes, fontsize=fs(13), color="#777777",
+    )
+
+    fig.tight_layout()
+    out = Path(__file__).with_name("vis_plot7_mean_sd.png")
+    fig.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Plot 7 saved → {out}")
+
+
+# ---------------------------------------------------------------------------
+# Plot 8 — Average Black-to-White complaint ratio per officer over time
+# ---------------------------------------------------------------------------
+def make_plot8() -> None:
+    years_sorted = [str(y) for y in range(1999, 2020)]
+    xs = [int(y) for y in years_sorted]
+
+    means: list[float] = []
+    sds:   list[float] = []
+
+    for year in years_sorted:
+        officers_this_year = year_officers.get(year, set())
+        ratios = []
+        for mos_id in officers_this_year:
+            n_black = len(year_officer_race[year][mos_id].get("Black", set()))
+            n_white = len(year_officer_race[year][mos_id].get("White", set()))
+            # Only include officers who had at least one White complaint
+            # (ratio is undefined / infinite otherwise)
+            if n_white > 0 and n_black > 0:
+                ratios.append(n_black / n_white)
+
+        arr = np.array(ratios, dtype=float)
+        if len(arr) > 0:
+            means.append(arr.mean())
+            sds.append(arr.std(ddof=1) if len(arr) > 1 else 0.0)
+        else:
+            means.append(float("nan"))
+            sds.append(float("nan"))
+
+    means_arr = np.array(means)
+    sds_arr   = np.array(sds)
+
+    color = STACK_COLORS["Black"]
+
+    fig, ax = plt.subplots(figsize=(10, 5.5))
+    fw = fig.get_size_inches()[0]
+    fs = lambda x: _font_scale(fw, x)
+    apply_nyt_style(ax)
+    ax.tick_params(labelsize=fs(12))
+
+    # ±1 SD band
+    ax.fill_between(
+        xs,
+        np.maximum(0, means_arr - sds_arr),
+        means_arr + sds_arr,
+        color=color, alpha=0.15, linewidth=0, zorder=2,
+    )
+
+    # Ratio = 1 reference line
+    ax.axhline(1.0, color="#888888", linewidth=1.0, linestyle="--",
+               zorder=1, alpha=0.7)
+    ax.text(
+        xs[-1] + 0.3, 1.02, "Equal",
+        fontsize=fs(10), color="#888888", va="bottom",
+    )
+
+    # Mean line + dots
+    ax.plot(xs, means_arr, color=color, linewidth=2,
+            solid_capstyle="round", zorder=3)
+    ax.scatter(xs, means_arr, s=28, zorder=4,
+               facecolors="white", edgecolors=color, linewidths=1.5)
+
+    ax.set_xlim(xs[0] - 1, xs[-1] + 3)
+    ax.xaxis.set_major_locator(mticker.MultipleLocator(5))
+    ax.xaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: str(int(x))))
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{x:.1f}x"))
+    ax.set_xlabel("Year", fontsize=fs(13), color="#444444")
+    ax.set_ylabel("Black / White complaints (per officer)", fontsize=fs(13), color="#444444")
+
+    ax.set_title(
+        "Average Black-to-White complaint ratio per officer over time",
+        fontsize=fs(20), fontweight="bold", color="#111111", loc="left", pad=fs(14),
+        fontfamily="Georgia",
+    )
+    ax.text(
+        0, 0.97,
+        "Officers with ≥1 White complaint included; shaded band = ±1 SD; dashed line = equal ratio",
+        transform=ax.transAxes, fontsize=fs(11), color="#777777",
+    )
+
+    fig.tight_layout()
+    out = Path(__file__).with_name("vis_plot8_bw_ratio.png")
+    fig.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Plot 8 saved → {out}")
+
+
+# ---------------------------------------------------------------------------
+# Plot 9 — % Exonerated (among Exonerated or Substantiated) by complainant ethnicity
+# ---------------------------------------------------------------------------
+def make_plot9() -> None:
+    years_sorted = [str(y) for y in range(2001, 2020)]
+    xs = list(range(len(years_sorted)))
+
+    MIN_CASES = 10  # minimum Exonerated+Substantiated cases per race to include a year
+
+    def total_cases(year: str, race: str) -> int:
+        return year_exonerated_by_race[year][race] + year_substantiated_by_race[year][race]
+
+    def pct_exon(year: str, race: str) -> float | None:
+        total = total_cases(year, race)
+        if total < MIN_CASES:
+            return None
+        return year_exonerated_by_race[year][race] / total * 100
+
+    diffs: list[float] = []
+    for year in years_sorted:
+        pb = pct_exon(year, "Black")
+        pw = pct_exon(year, "White")
+        if pb is not None and pw is not None:
+            diffs.append(pb - pw)
+        else:
+            diffs.append(float("nan"))
+
+    diffs_arr = np.array(diffs)
+    colors = [
+        STACK_COLORS["Black"] if (not np.isnan(v) and v >= 0) else STACK_COLORS["White"]
+        for v in diffs_arr
+    ]
+
+    fig, ax = plt.subplots(figsize=(10, 3.8))
+    fw = fig.get_size_inches()[0]
+    fs = lambda x: _font_scale(fw, x)
+    apply_nyt_style(ax, gridlines=False)
+    ax.tick_params(labelsize=fs(12))
+    ax.yaxis.grid(True, color="#E5E5E5", linewidth=0.7, zorder=0)
+    ax.set_axisbelow(True)
+
+    valid = ~np.isnan(diffs_arr)
+    ax.bar(
+        np.array(xs)[valid],
+        diffs_arr[valid],
+        color=np.array(colors)[valid],
+        width=0.75, linewidth=0, zorder=3,
+    )
+    ax.axhline(0, color="#333333", linewidth=1.0, zorder=4)
+
+    # Year tick labels every 3 years
+    # tick_positions = [i for i, y in enumerate(years_sorted) if (int(y) - 1999) % 3 == 0]
+    tick_positions = [i for i, y in enumerate(years_sorted) if (int(y) - 2001) % 3 == 0]
+    tick_labels    = [years_sorted[i] for i in tick_positions]
+    ax.set_xticks(tick_positions)
+    ax.set_xticklabels(tick_labels, fontsize=fs(12), color="#444444")
+    ax.set_xlim(-0.75, len(years_sorted) - 0.25)
+
+    ax.yaxis.set_major_formatter(
+        mticker.FuncFormatter(lambda v, _: f"{v:+.0f}pp")
+    )
+    ax.set_ylabel("Exoneration rate: Black − White (pp)", fontsize=fs(13), color="#444444")
+
+    ax.set_title(
+        "Exoneration gap between Black and White complainants over time",
+        fontsize=fs(20), fontweight="bold", color="#111111", loc="left", pad=fs(14),
+        fontfamily="Georgia",
+    )
+    ax.text(
+        0, 1.01,
+        "Difference in % exonerated (Black − White); among Exonerated or Substantiated cases only",
+        transform=ax.transAxes, fontsize=fs(11), color="#777777",
+    )
+
+    fig.tight_layout()
+    out = Path(__file__).with_name("vis_plot9_exonerated_pct.png")
+    fig.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Plot 9 saved → {out}")
 
 
 # ---------------------------------------------------------------------------
@@ -1035,6 +1493,10 @@ if __name__ == "__main__":
     make_plot3()
     make_plot4()
     make_plot5()
+    make_plot5_pie()
     make_plot6()
+    make_plot7()
+    make_plot8()
+    make_plot9()
     make_plot2_v3()
     print_report()
