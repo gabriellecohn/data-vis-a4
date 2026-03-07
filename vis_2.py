@@ -1470,7 +1470,7 @@ def make_plot9() -> None:
         fontfamily="Georgia",
     )
     ax.text(
-        0, 1.01,
+        0, 0.99,
         "Difference in % exonerated (Black − White); among Exonerated or Substantiated cases only",
         transform=ax.transAxes, fontsize=fs(11), color="#777777",
     )
